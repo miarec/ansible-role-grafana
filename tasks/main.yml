@@ -93,3 +93,43 @@
   register: __command_admin
   changed_when: __command_admin.rc !=0
 
+- name: set grafana datasource
+  grafana_datasource:
+    name: "{{ grafana_datasource_name }}"
+    grafana_url: "http://127.0.0.1:3000"
+    grafana_password: "{{ grafana_admin_password }}"
+    ds_type: prometheus
+    url: "http://127.0.0.1:9090"
+    state: present
+
+
+- name: download grafana dashboard 
+  get_url:
+    url: https://grafana.com/api/dashboards/{{ grafana_dash_id }}/revisions/{{ grafana_dash_rev }}/download
+    dest: "/etc/grafana/dashboard_{{ grafana_dash_id }}_rev_{{ grafana_dash_rev }}.json"
+    mode: 0644
+
+- name: Set the correct data source name in the dashboard
+  replace:
+    dest: "/etc/grafana/dashboard_{{ grafana_dash_id }}_rev_{{ grafana_dash_rev }}.json"
+    regexp: '"(?:\${)?DS_[A-Z0-9_-]+(?:})?"'
+    replace: '"{{ grafana_datasource_name }}"'
+
+- name: Set the dashboard as the default in grafana config file and restart grafana
+  replace:
+    dest: "/etc/grafana/grafana.ini"
+    regexp: '(;default_home_dashboard_path =)'
+    replace: 'default_home_dashboard_path = /etc/grafana/dashboard_{{ grafana_dash_id }}_rev_{{ grafana_dash_rev }}.json'
+  notify: restart_grafana
+
+#;default_home_dashboard_path = 
+
+
+#- name: Import Grafana dashboard 
+#  grafana_dashboard:
+#    grafana_url: "http://127.0.0.1:3000"
+#    grafana_password: "{{ grafana_admin_password }}"
+#    state: present
+#    overwrite: yes
+#    path: "/etc/grafana/dashboard_{{ grafana_dash_id }}_rev_{{ grafana_dash_rev }}.json"
+
