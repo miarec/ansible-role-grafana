@@ -2,3 +2,6 @@
 # defaults file for grafana
 
 grafana_admin_password: "miadevpwd"
+grafana_datasource_name: "prometheus"
+grafana_dash_id: "1860"
+grafana_dash_rev: "23"
