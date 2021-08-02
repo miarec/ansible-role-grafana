@@ -1,8 +1,8 @@
 ---
 # tasks file for grafana
 
-# Install grafana on Ubuntu via apt
-- name: install gpg for grafana - Debian
+# Install grafana via apt - Debian
+- name: install gpg for grafana - apt
   apt:
     name: gnupg,software-properties-common
     state: present
@@ -10,20 +10,20 @@
     cache_valid_time: 3600
   when: ansible_os_family == "Debian"
 
-- name: add gpg key for grafana - Debian
+- name: add gpg key for grafana - apt
   apt_key:
     url: "https://packages.grafana.com/gpg.key"
     validate_certs: no
   when: ansible_os_family == "Debian"
 
-- name: add repository for grafana - Debian
+- name: add repository for grafana - apt
   apt_repository:
     repo: "deb https://packages.grafana.com/oss/deb stable main"             
     state: present
     validate_certs: no
   when: ansible_os_family == "Debian"
 
-- name: install grafana - Debian
+- name: install grafana - apt
   apt:
     name: grafana
     state: latest
@@ -34,44 +34,39 @@
 
 # Install grafana via YUM - RedHat/CentOS
 
-- name: create grafana repo file for yum install - RedHat/CentOS
+- name: create grafana repo file for - yum
   template:
     src: grafana.repo.j2
     dest: /etc/yum.repos.d/grafana.repo
     mode: 0755
   when: ansible_os_family == "RedHat"
-
-- name: Install Grafana YUM - RedHat/CentOS
+  
+- name: Install Grafana - yum
   yum:
     name: grafana
     state: present
   when: ansible_os_family == "RedHat"
 
-- name: Install fontconfig YUM  - RedHat/CentOS
+- name: Install fontconfig - yum
   yum:
     name: fontconfig
     state: present
   when: ansible_os_family == "RedHat"
 
-- name: Install freetype* YUM - RedHat/CentOS
+- name: Install freetype* - yum
   yum:
     name: freetype*
     state: present
   when: ansible_os_family == "RedHat"
 
-- name: Install Grafana YUM - RedHat/CentOS
+- name: Install urw-fonts - yum
   yum:
     name: urw-fonts
     state: present
   when: ansible_os_family == "RedHat" 
 
 
-# Start Service and Set Admin Pswd
-- name: start grafana
-  systemd:
-    name: grafana-server
-    state: started
-    enabled: yes
+# Start Service
 
 - name: start service grafana-server
   systemd:
@@ -79,9 +74,12 @@
     state: started
     enabled: yes
 
+
+# Set Grafana Configuration Admin Pswd, Data Source, Dashboard
+
 - name: wait for service up
   uri:
-    url: "http://127.0.0.1:3000"
+    url: "http://127.0.0.1:{{ grafana_listen_port }}"
     status_code: 200
   register: __result
   until: __result.status == 200
@@ -96,12 +94,11 @@
 - name: set grafana datasource
   grafana_datasource:
     name: "{{ grafana_datasource_name }}"
-    grafana_url: "http://127.0.0.1:3000"
+    grafana_url: "http://127.0.0.1:{{ grafana_listen_port }}"
     grafana_password: "{{ grafana_admin_password }}"
     ds_type: prometheus
     url: "http://127.0.0.1:9090"
     state: present
-
 
 - name: download grafana dashboard 
   get_url:
@@ -122,14 +119,9 @@
     replace: 'default_home_dashboard_path = /etc/grafana/dashboard_{{ grafana_dash_id }}_rev_{{ grafana_dash_rev }}.json'
   notify: restart_grafana
 
-#;default_home_dashboard_path = 
-
-
-#- name: Import Grafana dashboard 
-#  grafana_dashboard:
-#    grafana_url: "http://127.0.0.1:3000"
-#    grafana_password: "{{ grafana_admin_password }}"
-#    state: present
-#    overwrite: yes
-#    path: "/etc/grafana/dashboard_{{ grafana_dash_id }}_rev_{{ grafana_dash_rev }}.json"
-
+- name: Set the listen port for the Admin Interface
+  replace:
+    dest: "/etc/grafana/grafana.ini"
+    regexp: '[;]?(http_port = )(\d*)'
+    replace: 'http_port = {{ grafana_listen_port }}'
+  notify: restart_grafana
