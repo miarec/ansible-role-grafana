@@ -1,11 +1,13 @@
 ---
 # defaults file for grafana
 
-grafana_listen_port: "3000"
 
+# Security
 grafana_admin_password: "miarec_grafana"
 
+#Dashboard/Data Source Setup
 grafana_datasource_name: "prometheus"
 
-grafana_dash_id: "1860"
-grafana_dash_rev: "23"
+grafana_dash_id: 1860
+grafana_dash_rev: 23
+grafana_dash_download_url: "https://grafana.com/api/dashboards/{{ grafana_dash_id }}/revisions/{{ grafana_dash_rev }}/download"

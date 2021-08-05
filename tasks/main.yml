@@ -66,6 +66,16 @@
   when: ansible_os_family == "RedHat" 
 
 
+# Set the Listen Port for Grafana server
+
+- name: Set the listen port for the Admin Interface
+  replace:
+    dest: "/etc/grafana/grafana.ini"
+    regexp: '[;]?(http_port = )(\d*)'
+    replace: 'http_port = {{ grafana_listen_port }}'
+  notify: restart_grafana
+
+
 # Start Service
 
 - name: start service grafana-server
@@ -75,7 +85,7 @@
     enabled: yes
 
 
-# Set Grafana Configuration Admin Pswd, Data Source, Dashboard
+# Set Grafana Configuration; Admin Pswd, Data Source, and setup Dashboard
 
 - name: wait for service up
   uri:
@@ -97,12 +107,12 @@
     grafana_url: "http://127.0.0.1:{{ grafana_listen_port }}"
     grafana_password: "{{ grafana_admin_password }}"
     ds_type: prometheus
-    url: "http://127.0.0.1:9090"
+    url: "http://127.0.0.1:{{ prometheus_listen_port }}"
     state: present
 
 - name: download grafana dashboard 
   get_url:
-    url: https://grafana.com/api/dashboards/{{ grafana_dash_id }}/revisions/{{ grafana_dash_rev }}/download
+    url: "{{ grafana_dash_download_url }}"
     dest: "/etc/grafana/dashboard_{{ grafana_dash_id }}_rev_{{ grafana_dash_rev }}.json"
     mode: 0644
 
@@ -119,9 +129,3 @@
     replace: 'default_home_dashboard_path = /etc/grafana/dashboard_{{ grafana_dash_id }}_rev_{{ grafana_dash_rev }}.json'
   notify: restart_grafana
 
-- name: Set the listen port for the Admin Interface
-  replace:
-    dest: "/etc/grafana/grafana.ini"
-    regexp: '[;]?(http_port = )(\d*)'
-    replace: 'http_port = {{ grafana_listen_port }}'
-  notify: restart_grafana
