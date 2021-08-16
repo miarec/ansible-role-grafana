@@ -5,6 +5,12 @@ Grafana is a tool that can Query, visualize, alert on, and understand your data 
 
 ## Role Variables
 
+### Access settings:
+
+    grafana_admin_password = "SET_ADMIN_PASSWORD_HERE"
+
+Set the password to access to web interface
+
 ### Connection settings:
 
     grafana_listen_port: "3000"

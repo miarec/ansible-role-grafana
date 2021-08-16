@@ -1,10 +1,6 @@
 ---
 # defaults file for grafana
 
-
-# Security
-grafana_admin_password: "miarec_grafana"
-
 #Dashboard/Data Source Setup
 grafana_datasource_name: "prometheus"
 
