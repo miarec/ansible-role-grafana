@@ -17,13 +17,6 @@ Set the password to access to web interface
 
 Set the tcp port the grafana server will be accessed, default port is 3000. 
 
-### Users
-
-    grafana_admin_password: "miarec_grafana"
-
-admin password that will be used to administer the system
-
-
 ### Data source
 
     grafana_datasource_name: "prometheus"
