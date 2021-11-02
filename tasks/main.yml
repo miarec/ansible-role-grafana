@@ -107,7 +107,7 @@
     grafana_url: "http://127.0.0.1:{{ grafana_listen_port }}"
     grafana_password: "{{ grafana_admin_password }}"
     ds_type: prometheus
-    url: "http://127.0.0.1:{{ prometheus_listen_port }}"
+    ds_url: "http://127.0.0.1:{{ prometheus_listen_port }}"
     state: present
 
 - name: download grafana dashboard 
