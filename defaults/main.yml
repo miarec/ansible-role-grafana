@@ -1,9 +1,18 @@
 ---
-# defaults file for grafana
+# Listen port for Grafana Web UI
+grafana_listen_port: 3000
 
-#Dashboard/Data Source Setup
-grafana_datasource_name: "prometheus"
+# default admin credentials for web UI
+grafana_admin_password: admin
 
-grafana_dash_id: 1860
-grafana_dash_rev: 23
-grafana_dash_download_url: "https://grafana.com/api/dashboards/{{ grafana_dash_id }}/revisions/{{ grafana_dash_rev }}/download"
+# Default datasource (assuming Prometheus running locally)
+grafana_datasources:
+  - name: prometheus
+    type: prometheus
+    url: http://127.0.0.1:9090
+
+grafana_dashboards:
+  - name: Node Exporter
+    id: 1860
+    rev: 23
+

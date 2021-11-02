@@ -13,24 +13,28 @@ Set the password to access to web interface
 
 ### Connection settings:
 
-    grafana_listen_port: "3000"
+    grafana_listen_port: 3000
 
 Set the tcp port the grafana server will be accessed, default port is 3000. 
 
-### Data source
+### Data sources
 
-    grafana_datasource_name: "prometheus"
+    grafana_datasources: 
+      - name: prometheus
+        type: prometheus
+        url: http://127.0.0.1:9090
 
 
 Set the name of the prometheus datasource that grafana will pull data from
 
-
 ### Dashboard Settings:
 
-    grafana_dash_id: "1860"
-    grafana_dash_rev: "23"
+    grafana_dashboards:
+      - name: Node Exporter
+        id: 1860
+        rev: 23
 
-Choose the default Dashboard that will be displayed when logging into the grafana instanace, https://grafana.com/grafana/dashboardsdashboards 
+Download dashboards from https://grafana.com/grafana/dashboardsdashboards 
 
 ## Dependencies
 
@@ -42,12 +46,10 @@ None.
     - name: Install grafana
       hosts: monitor
       become: yes
-      pre_tasks:
-        - include_vars: vars/custom.yml
-          failed_when: false
       roles:
-        - role: 'grafana'
-          tags: 'grafana'
+        - grafana
+      tags: 
+        - grafana
 
 ## Reloading / restarting
 

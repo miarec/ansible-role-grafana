@@ -75,7 +75,7 @@
 
 # Start Service
 
-- name: start service grafana-server
+- name: Start service grafana-server
   systemd:
     name: grafana-server
     state: started
@@ -93,35 +93,38 @@
   retries: 120
   delay: 1
 
-- name: change admin password for grafana gui
+- name: Change admin password for Grafana GUI
   shell : "grafana-cli admin reset-admin-password {{ grafana_admin_password }}"
   register: __command_admin
   changed_when: __command_admin.rc !=0
 
-- name: set grafana datasource
+- name: Set Grafana datasources
   grafana_datasource:
-    name: "{{ grafana_datasource_name }}"
     grafana_url: "http://127.0.0.1:{{ grafana_listen_port }}"
     grafana_password: "{{ grafana_admin_password }}"
-    ds_type: prometheus
-    ds_url: "http://127.0.0.1:{{ prometheus_listen_port }}"
+    name: "{{ item.name }}"
+    ds_type: "{{ item.type }}"
+    ds_url: "{{ item.url }}"
     state: present
-
-- name: download grafana dashboard 
+  with_items: "{{ grafana_datasources }}"
+  
+- name: Download Grafana dashboards
   get_url:
-    url: "{{ grafana_dash_download_url }}"
-    dest: "/etc/grafana/dashboard_{{ grafana_dash_id }}_rev_{{ grafana_dash_rev }}.json"
+    url: "https://grafana.com/api/dashboards/{{ item.id }}/revisions/{{ item.rev }}/download"
+    dest: "/etc/grafana/dashboard_{{ item.id }}_rev_{{ item.rev }}.json"
     mode: 0644
+  with_items: "{{ grafana_dashboards }}"
 
-- name: Set the correct data source name in the dashboard
-  replace:
-    dest: "/etc/grafana/dashboard_{{ grafana_dash_id }}_rev_{{ grafana_dash_rev }}.json"
-    regexp: '"(?:\${)?DS_[A-Z0-9_-]+(?:})?"'
-    replace: '"{{ grafana_datasource_name }}"'
+# - name: Set the correct data source name in the dashboard
+  # replace:
+    # dest: "/etc/grafana/dashboard_{{ grafana_dash_id }}_rev_{{ grafana_dash_rev }}.json"
+    # regexp: '"(?:\${)?DS_[A-Z0-9_-]+(?:})?"'
+    # replace: '"{{ grafana_datasource_name }}"'
 
-- name: Set the dashboard as the default in grafana config file and restart grafana
-  replace:
-    dest: "/etc/grafana/grafana.ini"
-    regexp: '(;default_home_dashboard_path =)'
-    replace: 'default_home_dashboard_path = /etc/grafana/dashboard_{{ grafana_dash_id }}_rev_{{ grafana_dash_rev }}.json'
-  notify: restart_grafana
+# - name: Set the dashboard as the default in grafana config file and restart grafana
+  # replace:
+    # dest: "/etc/grafana/grafana.ini"
+    # regexp: '(;default_home_dashboard_path =)'
+    # replace: 'default_home_dashboard_path = /etc/grafana/dashboard_{{ grafana_dash_id }}_rev_{{ grafana_dash_rev }}.json'
+  # notify: restart_grafana
+
