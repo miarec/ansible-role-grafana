@@ -1,10 +1,13 @@
 ---
-# tasks file for grafana
 
+# ----------------------------------------------
 # Install grafana via apt - Debian
-- name: install gpg for grafana - apt
+# ----------------------------------------------
+- name: install dependencies for Grafana - apt
   apt:
-    name: gnupg,software-properties-common
+    name: 
+      - gnupg
+      - software-properties-common
     state: present
     update_cache: yes
     cache_valid_time: 3600
@@ -13,57 +16,51 @@
 - name: add gpg key for grafana - apt
   apt_key:
     url: "https://packages.grafana.com/gpg.key"
-    validate_certs: no
+    validate_certs: yes
   when: ansible_os_family == "Debian"
 
 - name: add repository for grafana - apt
   apt_repository:
     repo: "deb https://packages.grafana.com/oss/deb stable main"             
     state: present
-    validate_certs: no
+    validate_certs: yes
   when: ansible_os_family == "Debian"
 
 - name: install grafana - apt
   apt:
     name: grafana
-    state: latest
+    state: present
     update_cache: yes
     cache_valid_time: 3600
   when: ansible_os_family == "Debian"
 
 
+# ----------------------------------------------
 # Install grafana via YUM - RedHat/CentOS
+# ----------------------------------------------
+  
+- name: Install dependencies for Grafana - yum
+  yum:
+    name:
+      - fontconfig
+      - freetype*
+      - urw-fonts
+    state: present
+  when: ansible_os_family == "RedHat"
 
-- name: create grafana repo file for - yum
+- name: Create Grafana repo file - yum
   template:
     src: grafana.repo.j2
     dest: /etc/yum.repos.d/grafana.repo
     mode: 0755
   when: ansible_os_family == "RedHat"
-  
+
 - name: Install Grafana - yum
   yum:
     name: grafana
     state: present
   when: ansible_os_family == "RedHat"
 
-- name: Install fontconfig - yum
-  yum:
-    name: fontconfig
-    state: present
-  when: ansible_os_family == "RedHat"
-
-- name: Install freetype* - yum
-  yum:
-    name: freetype*
-    state: present
-  when: ansible_os_family == "RedHat"
-
-- name: Install urw-fonts - yum
-  yum:
-    name: urw-fonts
-    state: present
-  when: ansible_os_family == "RedHat" 
 
 
 # Set the Listen Port for Grafana server
@@ -128,4 +125,3 @@
     regexp: '(;default_home_dashboard_path =)'
     replace: 'default_home_dashboard_path = /etc/grafana/dashboard_{{ grafana_dash_id }}_rev_{{ grafana_dash_rev }}.json'
   notify: restart_grafana
-
