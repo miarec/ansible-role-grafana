@@ -11,8 +11,19 @@ grafana_datasources:
     type: prometheus
     url: http://127.0.0.1:9090
 
-grafana_dashboards:
-  - name: Node Exporter
-    id: 1860
-    rev: 23
+# grafana_dashboards:
+#   - name: Node Exporter
+#     id: 1860
+#     rev: 23
+
+grafana_dashboards: []
+#  - dashboard_id: '4271'
+#    revision_id: '3'
+#    datasource: 'Prometheus'
+#  - dashboard_id: '1860'
+#    revision_id: '4'
+#    datasource: 'Prometheus'
+#  - dashboard_id: '358'
+#    revision_id: '1'
+#    datasource: 'Prometheus'
 

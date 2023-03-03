@@ -5,7 +5,7 @@
 # ----------------------------------------------
 - name: install dependencies for Grafana - apt
   apt:
-    name: 
+    name:
       - gnupg
       - software-properties-common
     state: present
@@ -21,7 +21,7 @@
 
 - name: add repository for grafana - apt
   apt_repository:
-    repo: "deb https://packages.grafana.com/oss/deb stable main"             
+    repo: "deb https://packages.grafana.com/oss/deb stable main"
     state: present
     validate_certs: yes
   when: ansible_os_family == "Debian"
@@ -38,7 +38,7 @@
 # ----------------------------------------------
 # Install grafana via YUM - RedHat/CentOS
 # ----------------------------------------------
-  
+
 - name: Install dependencies for Grafana - yum
   yum:
     name:
@@ -107,13 +107,21 @@
     ds_url: "{{ item.url }}"
     state: present
   with_items: "{{ grafana_datasources }}"
-  
-- name: Download Grafana dashboards
-  get_url:
-    url: "https://grafana.com/api/dashboards/{{ item.id }}/revisions/{{ item.rev }}/download"
-    dest: "/etc/grafana/dashboard_{{ item.id }}_rev_{{ item.rev }}.json"
-    mode: 0644
-  with_items: "{{ grafana_dashboards }}"
+
+
+- include: dashboards.yml
+  when: grafana_dashboards | length > 0 or found_dashboards | length > 0
+  tags:
+    - grafana_configure
+    - grafana_dashboards
+    - grafana_run
+
+# - name: Download Grafana dashboards
+#   get_url:
+#     url: "https://grafana.com/api/dashboards/{{ item.id }}/revisions/{{ item.rev }}/download"
+#     dest: "/etc/grafana/dashboard_{{ item.id }}_rev_{{ item.rev }}.json"
+#     mode: 0644
+#   with_items: "{{ grafana_dashboards }}"
 
 # - name: Set the correct data source name in the dashboard
   # replace:
