@@ -67,7 +67,7 @@
 
 - name: Set the listen port for the Admin Interface
   replace:
-    dest: "/etc/grafana/grafana.ini"
+    dest: "{{ grafana_config_dir }}/grafana.ini"
     regexp: '[;]?(http_port = )(\d*)'
     replace: 'http_port = {{ grafana_listen_port }}'
   notify: restart_grafana
@@ -115,4 +115,3 @@
     - grafana_configure
     - grafana_dashboards
     - grafana_run
-

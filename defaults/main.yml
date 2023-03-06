@@ -1,4 +1,7 @@
 ---
+grafana_config_dir: "/etc/grafana"
+grafana_dashboard_dir: "{{ grafana_config_dir }}/dashboard"
+
 # Listen port for Grafana Web UI
 grafana_listen_port: 3000
 
