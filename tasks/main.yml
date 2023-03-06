@@ -9,28 +9,28 @@
       - gnupg
       - software-properties-common
     state: present
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 3600
   when: ansible_os_family == "Debian"
 
 - name: add gpg key for grafana - apt
   apt_key:
     url: "https://packages.grafana.com/gpg.key"
-    validate_certs: yes
+    validate_certs: true
   when: ansible_os_family == "Debian"
 
 - name: add repository for grafana - apt
   apt_repository:
     repo: "deb https://packages.grafana.com/oss/deb stable main"
     state: present
-    validate_certs: yes
+    validate_certs: true
   when: ansible_os_family == "Debian"
 
 - name: install grafana - apt
   apt:
     name: grafana
     state: present
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 3600
   when: ansible_os_family == "Debian"
 
@@ -38,7 +38,6 @@
 # ----------------------------------------------
 # Install grafana via YUM - RedHat/CentOS
 # ----------------------------------------------
-
 - name: Install dependencies for Grafana - yum
   yum:
     name:
@@ -61,10 +60,7 @@
     state: present
   when: ansible_os_family == "RedHat"
 
-
-
 # Set the Listen Port for Grafana server
-
 - name: Set the listen port for the Admin Interface
   replace:
     dest: "{{ grafana_config_dir }}/grafana.ini"
@@ -72,18 +68,15 @@
     replace: 'http_port = {{ grafana_listen_port }}'
   notify: restart_grafana
 
-
 # Start Service
-
 - name: Start service grafana-server
   systemd:
     name: grafana-server
     state: started
-    enabled: yes
+    enabled: true
 
 
 # Set Grafana Configuration; Admin Pswd, Data Source, and setup Dashboard
-
 - name: wait for service up
   uri:
     url: "http://127.0.0.1:{{ grafana_listen_port }}"
@@ -94,7 +87,7 @@
   delay: 1
 
 - name: Change admin password for Grafana GUI
-  shell : "grafana-cli admin reset-admin-password {{ grafana_admin_password }}"
+  shell: "grafana-cli admin reset-admin-password {{ grafana_admin_password }}"
   register: __command_admin
   changed_when: __command_admin.rc !=0
 
@@ -107,7 +100,6 @@
     ds_url: "{{ item.url }}"
     state: present
   with_items: "{{ grafana_datasources }}"
-
 
 - include: dashboards.yml
   when: grafana_dashboards | length > 0

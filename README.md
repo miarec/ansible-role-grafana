@@ -63,3 +63,7 @@ None.
 Key config changes to the config file /etc/grafana/grafana.ini require a full restart
 
     sudo systemctl restart grafana-server
+
+# ToDo
+ - dashboards are not removed if not on list
+ - add unit testing

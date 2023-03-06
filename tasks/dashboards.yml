@@ -38,7 +38,6 @@
     dest: "{{ grafana_config_dir }}/grafana.ini"
     regexp: '(;default_home_dashboard_path =)'
     replace: 'default_home_dashboard_path = {{ grafana_dashboard_dir }}/dashboard_{{ item.dashboard_id  }}_rev_{{ item.revision_id }}.json'
-
   when: "{{ item.default }}"
   loop: "{{ grafana_dashboards }}"
   notify: restart_grafana
