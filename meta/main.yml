@@ -2,7 +2,7 @@
 galaxy_info:
   role_name: grafana
   author: miarec
-  description: Install Grafana service to act as a front end for Prometheus and Loki
+  description: Install Grafana server to act as a front end for Prometheus and Loki
   company: MiaRec, Inc.
 
   license: MIT

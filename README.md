@@ -15,11 +15,11 @@ Set the password to access to web interface
 
     grafana_listen_port: 3000
 
-Set the tcp port the grafana server will be accessed, default port is 3000. 
+Set the tcp port the grafana server will be accessed, default port is 3000.
 
 ### Data sources
 
-    grafana_datasources: 
+    grafana_datasources:
       - name: prometheus
         type: prometheus
         url: http://127.0.0.1:9090
@@ -31,10 +31,17 @@ Set the name of the prometheus datasource that grafana will pull data from
 
     grafana_dashboards:
       - name: Node Exporter
-        id: 1860
-        rev: 23
+        dashboard_id: 1860
+        revision_id: 23
+        datasource: prometheus
+        default: true
+      - name: Process Exporter
+        dashboard_id: 249
+        revision_id: 2
+        datasource: prometheus
+        default: false
 
-Download dashboards from https://grafana.com/grafana/dashboardsdashboards 
+Download dashboards from https://grafana.com/grafana/dashboards
 
 ## Dependencies
 
@@ -48,7 +55,7 @@ None.
       become: yes
       roles:
         - grafana
-      tags: 
+      tags:
         - grafana
 
 ## Reloading / restarting
@@ -56,3 +63,7 @@ None.
 Key config changes to the config file /etc/grafana/grafana.ini require a full restart
 
     sudo systemctl restart grafana-server
+
+# ToDo
+ - dashboards are not removed if not on list
+ - add unit testing
