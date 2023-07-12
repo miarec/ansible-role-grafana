@@ -21,7 +21,6 @@
           datasource: 'Prometheus'
           default: true
 
-
   roles:
     - role: ansible-role-grafana
       tags:
