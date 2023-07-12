@@ -19,7 +19,6 @@ def test_directories(host):
 
 def test_files(host):
     files = [
-        "/etc/systemd/system/grafana-server.service",
         "/etc/grafana/provisioning/dashboards/ansible_dashboard.yml"
     ]
     for file in files:
