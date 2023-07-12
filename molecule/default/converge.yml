@@ -1,0 +1,27 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+
+  pre_tasks:
+    - name: Install prerequisites
+      block:
+        - name: Update apt cache
+          apt:
+            update_cache: true
+            cache_valid_time: 600
+          changed_when: false
+          when: ansible_os_family == "Debian"
+
+    # Set a default dashboard to test dashboard config
+    - set_fact:
+        grafana_dashboards:
+          - dashboard_id: '4271'
+            revision_id: '3'
+            datasource: 'Prometheus'
+            default: true
+
+  roles:
+    - role: ansible-role-grafana
+      tags:
+        - grafana
