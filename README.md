@@ -1,4 +1,6 @@
 # ansible-role-grafana
+![CI](https://github.com/miarec/ansible-role-grafana/actions/workflows/ci.yml/badge.svg?event=push)
+
 Ansible role to install Grafana Server.
 
 Grafana is a tool that can Query, visualize, alert on, and understand your data recorded in external database.   Data is visualizsed in flexible dashboards
