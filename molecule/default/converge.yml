@@ -15,11 +15,11 @@
 
     # Set a default dashboard to test dashboard config
     - set_fact:
-      grafana_dashboards:
-        - dashboard_id: '4271'
-          revision_id: '3'
-          datasource: 'Prometheus'
-          default: true
+        grafana_dashboards:
+          - dashboard_id: '4271'
+            revision_id: '3'
+            datasource: 'Prometheus'
+            default: true
 
   roles:
     - role: ansible-role-grafana
